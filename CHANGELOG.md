@@ -10,11 +10,13 @@
   (broken since pcs-0.10.2) ([rhbz#1725183])
 - Fixed crashes when pcs is configured that no rubygems are bundled in pcs
   package ([ghissue#208])
+- Fixed shebang correction in Makefile ([ghissue#206])
 
 ### Changed
 - Command `pcs resource bundle reset` no longer accepts the container type
   ([rhbz#1657166])
 
+[ghissue#206]: https://github.com/ClusterLabs/pcs/issues/206
 [ghissue#208]: https://github.com/ClusterLabs/pcs/issues/208
 [rhbz#1657166]: https://bugzilla.redhat.com/show_bug.cgi?id=1657166
 [rhbz#1676957]: https://bugzilla.redhat.com/show_bug.cgi?id=1676957
