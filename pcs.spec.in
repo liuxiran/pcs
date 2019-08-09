@@ -1,0 +1,312 @@
+%global pcs_git_version @VERSION@
+%global numcommit @NUMCOMMIT@
+%global commit @COMMIT@
+
+Name: pcs
+Version: %{pcs_git_version}
+Release: 99.git.%{numcommit}.%{commit}.1%{?dist}
+# https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#Good_Licenses
+# GPLv2: pcs
+# MIT: handlebars
+License: GPLv2 and MIT
+URL: https://github.com/ClusterLabs/pcs
+Summary: Pacemaker Configuration System
+
+%if "%{numcommit}" == "0"
+%global pcs_source_name %{name}-%{pcs_git_version}
+%else
+%global pcs_source_name %{name}-%{commit}
+%endif
+
+%global pcs_snmp_pkg_name pcs-snmp
+
+%global pyagentx_version 0.4.pcs.1
+%global version_rubygem_backports 3.12.0
+%global version_rubygem_multi_json 1.13.1
+%global version_rubygem_open4 1.3.4
+%global version_rubygem_orderedhash 0.0.6
+%global version_rubygem_rack_protection 1.5.5
+%global version_rubygem_rack_test 0.8.3
+%global version_rubygem_rack 1.6.11
+%global version_rubygem_rpam_ruby19 1.2.1
+%global version_rubygem_sinatra_contrib  1.4.7
+%global version_rubygem_sinatra  1.4.8
+%global version_rubygem_tilt 2.0.9
+%global version_rubygem_ethon 0.12.0
+%global version_rubygem_ffi 1.10.0
+
+# We do not use _libdir macro because upstream is not prepared for it.
+# Pcs does not include binaries and thus it should live in /usr/lib. Tornado
+# and gems include binaries and thus it should live in /usr/lib64. But the
+# path to tornado/gems is hardcoded in pcs sources. Modify hard links in pcs
+# sources is not the way since then rpmdiff complains that the same file has
+# different content in different architectures.
+%global pcs_libdir %{_prefix}/lib
+%global bundled_lib_dir pcs/bundled
+%global pyagentx_dir %{bundled_lib_dir}/pyagentx
+%global rubygem_bundle_dir pcsd/vendor/bundle/ruby
+%global rubygem_cache_dir pcsd/vendor/cache
+
+Source0: %{pcs_source_name}.tar.gz
+Source1: pcsd-bundle-config
+
+Source11: https://rubygems.org/downloads/backports-%{version_rubygem_backports}.gem
+Source12: https://rubygems.org/downloads/multi_json-%{version_rubygem_multi_json}.gem
+Source13: https://rubygems.org/downloads/open4-%{version_rubygem_open4}.gem
+Source14: https://rubygems.org/downloads/orderedhash-%{version_rubygem_orderedhash}.gem
+Source15: https://rubygems.org/downloads/rack-protection-%{version_rubygem_rack_protection}.gem
+Source16: https://rubygems.org/downloads/rack-test-%{version_rubygem_rack_test}.gem
+Source17: https://rubygems.org/downloads/rack-%{version_rubygem_rack}.gem
+Source18: https://rubygems.org/downloads/rpam-ruby19-%{version_rubygem_rpam_ruby19}.gem
+Source19: https://rubygems.org/downloads/sinatra-contrib-%{version_rubygem_sinatra_contrib}.gem
+Source20: https://rubygems.org/downloads/sinatra-%{version_rubygem_sinatra}.gem
+Source21: https://rubygems.org/downloads/tilt-%{version_rubygem_tilt}.gem
+Source22: https://rubygems.org/downloads/ethon-%{version_rubygem_ethon}.gem
+Source23: https://rubygems.org/downloads/ffi-%{version_rubygem_ffi}.gem
+
+Source41: https://github.com/ondrejmular/pyagentx/archive/v%{pyagentx_version}.tar.gz#/pyagentx-%{pyagentx_version}.tar.gz
+
+# git for patches
+BuildRequires: git
+#printf from coreutils is used in makefile
+BuildRequires: coreutils
+# python for pcs
+BuildRequires: python
+BuildRequires: python-devel
+BuildRequires: python-setuptools
+# gcc for compiling custom rubygems
+BuildRequires: gcc
+BuildRequires: gcc-c++
+# ruby and gems for pcsd
+BuildRequires: ruby >= 2.0.0
+BuildRequires: rubygems
+BuildRequires: ruby-devel
+# pam devel for compiling rubygem-rpam-ruby19
+BuildRequires: pam-devel
+BuildRequires: rubygem-bundler
+#for building rubygem-ffi
+BuildRequires: libffi-devel
+
+# following for UpdateTimestamps sanitization function
+BuildRequires: systemd-units
+# pcsd fonts and font management tools
+BuildRequires: fontconfig
+BuildRequires: liberation-sans-fonts
+BuildRequires: overpass-fonts
+
+# python and libraries for pcs, setuptools for pcs entrypoint
+Requires: python
+Requires: python-lxml
+Requires: python-setuptools
+Requires: python-clufter >= 0.59.0
+Requires: python-pycurl
+# ruby and gems for pcsd
+Requires: ruby >= 2.0.0
+Requires: rubygem-json
+# for killall
+Requires: psmisc
+# for working with certificates (validation etc.)
+Requires: openssl
+# cluster stack and related packages
+Requires: corosync
+Requires: pacemaker
+Requires: pacemaker-cli
+# for post, preun and postun macros
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+# pcsd fonts
+Requires: liberation-sans-fonts
+Requires: overpass-fonts
+
+Provides: bundled(rubygem-backports) = %{version_rubygem_backports}
+Provides: bundled(rubygem-multi_json) = %{version_rubygem_multi_json}
+Provides: bundled(rubygem-open4) = %{version_rubygem_open4}
+Provides: bundled(rubygem-orderedhash) = %{version_rubygem_orderedhash}
+Provides: bundled(rubygem-rack) = %{version_rubygem_rack}
+Provides: bundled(rubygem-rack-protection) = %{version_rubygem_rack_protection}
+Provides: bundled(rubygem-rack-test) = %{version_rubygem_rack_test}
+Provides: bundled(rubygem-rpam-ruby19) = %{version_rubygem_rpam_ruby19}
+Provides: bundled(rubygem-sinatra) = %{version_rubygem_sinatra}
+Provides: bundled(rubygem-sinatra-contrib) = %{version_rubygem_sinatra_contrib}
+Provides: bundled(rubygem-tilt) = %{version_rubygem_tilt}
+Provides: bundled(rubygem-ethon) = %{version_rubygem_ethon}
+Provides: bundled(rubygem-ffi) = %{version_rubygem_ffi}
+
+%description
+pcs is a corosync and pacemaker configuration tool.  It permits users to
+easily view, modify and create pacemaker based clusters.
+
+# pcs-snmp package definition
+%package -n %{pcs_snmp_pkg_name}
+Group: System Environment/Base
+Summary: Pacemaker cluster SNMP agent
+# https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#Good_Licenses
+# GPLv2: pcs
+# BSD-2-Clause: pyagentx
+License: GPLv2 and BSD-2-Clause
+URL: https://github.com/ClusterLabs/pcs
+
+# tar for unpacking pyagetx source tar ball
+BuildRequires: tar
+
+Requires: pcs = %{version}-%{release}
+Requires: pacemaker
+Requires: net-snmp
+
+Provides: bundled(pyagentx) = %{pyagentx_version}
+
+%description -n %{pcs_snmp_pkg_name}
+SNMP agent that provides information about pacemaker cluster to the master agent (snmpd)
+
+%prep
+%autosetup -n %{pcs_source_name}
+
+# prepare rubygem config
+mkdir -p pcsd/.bundle
+cp -f %SOURCE1 pcsd/.bundle/config
+
+mkdir -p pcsd/vendor/cache
+#copy ruby gems
+cp -f %SOURCE11 pcsd/vendor/cache
+cp -f %SOURCE12 pcsd/vendor/cache
+cp -f %SOURCE13 pcsd/vendor/cache
+cp -f %SOURCE14 pcsd/vendor/cache
+cp -f %SOURCE15 pcsd/vendor/cache
+cp -f %SOURCE16 pcsd/vendor/cache
+cp -f %SOURCE17 pcsd/vendor/cache
+cp -f %SOURCE18 pcsd/vendor/cache
+cp -f %SOURCE19 pcsd/vendor/cache
+cp -f %SOURCE20 pcsd/vendor/cache
+cp -f %SOURCE21 pcsd/vendor/cache
+cp -f %SOURCE22 pcsd/vendor/cache
+cp -f %SOURCE23 pcsd/vendor/cache
+#ruby gems copied
+
+mkdir -p %{bundled_lib_dir}
+tar -xzf %SOURCE41 -C %{bundled_lib_dir}
+mv %{bundled_lib_dir}/pyagentx-%{pyagentx_version} %{pyagentx_dir}
+cp %{pyagentx_dir}/LICENSE.txt pyagentx_LICENSE.txt
+cp %{pyagentx_dir}/CONTRIBUTORS.txt pyagentx_CONTRIBUTORS.txt
+cp %{pyagentx_dir}/README.md pyagentx_README.md
+
+%build
+%define debug_package %{nil}
+
+%install
+# build bundled rubygems (in main install it is disabled by BUILD_GEMS=false)
+mkdir -p %{rubygem_bundle_dir}
+gem install \
+  --force --verbose --no-rdoc --no-ri -l --ignore-dependencies \
+  -i %{rubygem_bundle_dir} \
+  %{rubygem_cache_dir}/backports-%{version_rubygem_backports}.gem \
+  %{rubygem_cache_dir}/ethon-%{version_rubygem_ethon}.gem \
+  %{rubygem_cache_dir}/ffi-%{version_rubygem_ffi}.gem \
+  %{rubygem_cache_dir}/multi_json-%{version_rubygem_multi_json}.gem \
+  %{rubygem_cache_dir}/open4-%{version_rubygem_open4}.gem \
+  %{rubygem_cache_dir}/rack-%{version_rubygem_rack}.gem \
+  %{rubygem_cache_dir}/rack-protection-%{version_rubygem_rack_protection}.gem \
+  %{rubygem_cache_dir}/rack-test-%{version_rubygem_rack_test}.gem \
+  %{rubygem_cache_dir}/rpam-ruby19-%{version_rubygem_rpam_ruby19}.gem \
+  %{rubygem_cache_dir}/sinatra-%{version_rubygem_sinatra}.gem \
+  %{rubygem_cache_dir}/sinatra-contrib-%{version_rubygem_sinatra_contrib}.gem \
+  %{rubygem_cache_dir}/tilt-%{version_rubygem_tilt}.gem \
+  -- '--with-ldflags=-Wl,-z,now -Wl,-z,relro'
+
+# We can remove files required for gem compilation
+rm -rf %{rubygem_bundle_dir}/gems/ffi-%{version_rubygem_ffi}/ext
+rm -rf %{rubygem_bundle_dir}/gems/json-%{version_rubygem_json}/ext
+
+make install \
+  DESTDIR=$RPM_BUILD_ROOT \
+  PYTHON_SITELIB=%{python_sitelib} \
+  PREFIX=%{_prefix} \
+  BASH_COMPLETION_DIR=$RPM_BUILD_ROOT/usr/share/bash-completion/completions \
+  PYAGENTX_DIR=`readlink -f %{pyagentx_dir}` \
+  SYSTEMCTL_OVERRIDE=true
+
+#SYSTEMCTL_OVERRIDE enforces systemd to be used and skip autodetection
+make install_pcsd \
+  DESTDIR=$RPM_BUILD_ROOT \
+  PYTHON_SITELIB=%{python_sitelib} \
+  hdrdir="%{_includedir}" \
+  rubyhdrdir="%{_includedir}" \
+  includedir="%{_includedir}" \
+  PREFIX=%{_prefix} \
+  BUILD_GEMS=false \
+  SYSTEMCTL_OVERRIDE=true
+
+#after the ruby gem compilation we do not need ruby gems in the cache
+rm -r -v $RPM_BUILD_ROOT%{pcs_libdir}/%{rubygem_cache_dir}
+
+#remove tests after use here to be symmetrical with pcs tests
+rm -r -v $RPM_BUILD_ROOT%{pcs_libdir}/pcsd/test
+
+%post
+%systemd_post pcsd.service
+
+%post -n %{pcs_snmp_pkg_name}
+%systemd_post pcs_snmp_agent.service
+
+%preun
+%systemd_preun pcsd.service
+
+%preun -n %{pcs_snmp_pkg_name}
+%systemd_preun pcs_snmp_agent.service
+
+%postun
+%systemd_postun_with_restart pcsd.service
+
+%postun -n %{pcs_snmp_pkg_name}
+%systemd_postun_with_restart pcs_snmp_agent.service
+
+%files
+%{python_sitelib}/pcs
+%{python_sitelib}/pcs-%{version}-py2.*.egg-info
+%{_sbindir}/pcs
+%{pcs_libdir}/pcsd/*
+%{pcs_libdir}/pcsd/.bundle/config
+%{_unitdir}/pcsd.service
+%{_datadir}/bash-completion/completions/pcs
+%{_sharedstatedir}/pcsd
+%{_sysconfdir}/pam.d/pcsd
+%dir /var/log/pcsd
+%config(noreplace) %{_sysconfdir}/logrotate.d/pcsd
+%config(noreplace) %{_sysconfdir}/sysconfig/pcsd
+%ghost %config(noreplace) %attr(0600,root,root) %{_sharedstatedir}/pcsd/cfgsync_ctl
+%ghost %config(noreplace) %attr(0600,root,root) %{_sharedstatedir}/pcsd/pcsd.cookiesecret
+%ghost %config(noreplace) %attr(0600,root,root) %{_sharedstatedir}/pcsd/pcsd.crt
+%ghost %config(noreplace) %attr(0600,root,root) %{_sharedstatedir}/pcsd/pcsd.key
+%ghost %config(noreplace) %attr(0644,root,root) %{_sharedstatedir}/pcsd/pcs_settings.conf
+%ghost %config(noreplace) %attr(0644,root,root) %{_sharedstatedir}/pcsd/pcs_users.conf
+%ghost %config(noreplace) %attr(0600,root,root) %{_sharedstatedir}/pcsd/tokens
+%{_mandir}/man8/pcs.*
+%{_mandir}/man8/pcsd.*
+%exclude %{pcs_libdir}/pcsd/*.debian
+%exclude %{pcs_libdir}/pcsd/pcsd.service
+%exclude %{pcs_libdir}/pcsd/pcsd.conf
+%exclude %{python_sitelib}/pcs/bash_completion
+%exclude %{python_sitelib}/pcs/pcs.8
+%exclude %{python_sitelib}/pcs/pcs
+
+%doc COPYING
+%doc CHANGELOG.md
+
+%files -n %{pcs_snmp_pkg_name}
+%{pcs_libdir}/pcs/pcs_snmp_agent
+%{pcs_libdir}/pcs/bundled/packages/pyagentx*
+%{_unitdir}/pcs_snmp_agent.service
+%{_datadir}/snmp/mibs/PCMK-PCS*-MIB.txt
+%{_mandir}/man8/pcs_snmp_agent.*
+%config(noreplace) %{_sysconfdir}/sysconfig/pcs_snmp_agent
+%dir %{_localstatedir}/log/pcs
+%doc COPYING
+%doc CHANGELOG.md
+%doc pyagentx_LICENSE.txt
+%doc pyagentx_CONTRIBUTORS.txt
+%doc pyagentx_README.md
+
+
+%changelog
+* @DATE@ Autotools generated version <nobody@nowhere.org> - @VERSION@-99.git.@NUMCOMMIT@.@COMMIT@.1
+- Autotools generated version
