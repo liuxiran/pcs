@@ -52,6 +52,7 @@ end
 
 before do
   # nobody is logged in yet
+  @I18n = I18n
   @auth_user = nil
   @tornado_session_username = Thread.current[:tornado_username]
   @tornado_session_groups = Thread.current[:tornado_groups]
