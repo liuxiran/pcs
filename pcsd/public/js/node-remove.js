@@ -48,15 +48,13 @@ nodesRemove.submit.run = function(nodeNameList, clusterName){
     },
     {
       confirm: function(msgs){
-        return tools.submit.confirmForce("remove nodes from cluster", msgs);
+        return tools.submit.confirmForce($.i18n("removeNodesFromCluster"), msgs);
       },
       buildMsg: function(report){
         switch(report.code){
           case "CANNOT_REMOVE_ALL_CLUSTER_NODES":
             return (
-              "No nodes would be left in the cluster. If you intend to destroy"
-              +" the whole cluster, go to cluster list page, select the cluster"
-              +" and click 'Destroy'."
+              $.i18n("NoNodesWouldBeLeft")
             );
         }
       },
@@ -80,7 +78,7 @@ nodesRemove.submit.run = function(nodeNameList, clusterName){
         break;
 
       case api.err.NODES_REMOVE.PCS_LIB_EXCEPTION:
-        alert("Server returned an error: "+data.msg);
+        alert($.i18n("serverReturnedError")+data.msg);
         nodesRemove.dialog.close();
         break;
       case api.err.NODES_REMOVE.CONFIRMATION_DENIED:

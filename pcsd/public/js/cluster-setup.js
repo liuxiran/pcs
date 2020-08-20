@@ -308,13 +308,13 @@ clusterSetup.data.validateNameAndNodes = function(formData){
   if(formData.clusterName == ""){
     errors.push({
       type: "error",
-      msg: "You may not leave the cluster name field blank.",
+      msg: $.i18n("clusterNameRequired"),
     });
   }
   if(formData.nodesNames.length == 0){
     errors.push({
       type: "error",
-      msg: "At least one valid node must be entered.",
+      msg: $.i18n("oneNodeNameRequired"),
     });
   }
   return errors;
@@ -469,18 +469,18 @@ clusterSetup.step.set = function(config){
 clusterSetup.step.clusterNameNodes = function(){
   clusterSetup.step.set({
     stepForm: "cluster-name-nodes",
-    title: "Create cluster: Cluster name and nodes",
+    title: $.i18n("add")+$.i18n("cluster")+ ": " + $.i18n("cluster") + $.i18n("name") + $.i18n("and") + $.i18n("nodes"),
     buttons: [
       {
-        text: "Create cluster",
+        text: $.i18n("add")+$.i18n("cluster"),
         click: function(){ clusterSetup.submit.run(false) },
       },
       {
-        text: "Go to advanced settings",
+        text: $.i18n("advancedSettings"),
         click: function(){ clusterSetup.submit.run(true) },
       },
       {
-        text: "Cancel",
+        text: $.i18n("cancel"),
         click: clusterSetup.dialog.close,
       },
     ],
@@ -490,18 +490,18 @@ clusterSetup.step.clusterNameNodes = function(){
 clusterSetup.step.clusterSettings = function(clusterName, nodesNames, actions){
   clusterSetup.step.set({
     stepForm: "cluster-settings",
-    title: "Create cluster "+clusterName+": Settings",
+    title: $.i18n("add") + $.i18n("cluster")+clusterName+": "+ $.i18n("settings"),
     buttons: [
       {
-        text: "Back",
+        text: $.i18n("back"),
         click: actions.back,
       },
       {
-        text: "Create cluster",
+        text: $.i18n("add")+$.i18n("cluster"),
         click: actions.create,
       },
       {
-        text: "Cancel",
+        text: $.i18n("cancel"),
         click: actions.cancel,
       },
     ],
@@ -525,10 +525,10 @@ clusterSetup.step.clusterSettings = function(clusterName, nodesNames, actions){
 clusterSetup.step.clusterStart = function(clusterName, actions){
   clusterSetup.step.set({
     stepForm: "cluster-start",
-    title: "Create cluster "+clusterName+": Start",
+    title: $.i18n("add")+$.i18n("cluster")+clusterName+": "+$.i18n("start"),
     buttons: [
       {
-        text: "Finish",
+        text: $.i18n("finish"),
         click: actions.finish,
       },
     ],
@@ -559,17 +559,17 @@ clusterSetup.dialog.close = function() {
 };
 
 clusterSetup.dialog.setSubmitAbility = tools.dialog.setActionAbility(
-   ".ui-dialog:has('#csetup') button:contains('Create cluster'),"
-   +".ui-dialog:has('#csetup') button:contains('Go to advanced settings')"
+   ".ui-dialog:has('#csetup') button:contains('"+$.i18n("add")+$.i18n("cluster")+"'),"
+   +".ui-dialog:has('#csetup') button:contains('"+$.i18n("advancedSettings")+"')"
 );
 
 clusterSetup.dialog.setSubmitAdvancedAbility = tools.dialog.setActionAbility(
-   ".ui-dialog:has('#csetup') button:contains('Back'),"
-   +".ui-dialog:has('#csetup') button:contains('Create cluster')"
+   ".ui-dialog:has('#csetup') button:contains('"+$.i18n("back")+"'),"
+   +".ui-dialog:has('#csetup') button:contains('"+$.i18n("add")+$.i18n("cluster")+"')"
 );
 
 clusterSetup.dialog.setSubmitStartAbility = tools.dialog.setActionAbility(
-   ".ui-dialog:has('#csetup') button:contains('Finish')"
+   ".ui-dialog:has('#csetup') button:contains('"+$.i18n("finish")+"')"
 );
 
 /**
@@ -600,7 +600,7 @@ clusterSetup.dialog.addNode = function(){
   var nodes = $("#csetup tr").has("[name='node[]']");
 
   var newNode = nodes.eq(0).clone();
-  $("td:first-child", newNode).text("Node "+(nodes.length+1)+":");
+  $("td:first-child", newNode).text($.i18n("node")+" "+(nodes.length+1)+":");
   $("input[name='node[]']", newNode).val("");
   newNode.insertAfter(nodes.last());
 
@@ -714,7 +714,7 @@ clusterSetup.submit.run = function(useAdvancedOptions){
       },
       {
         confirm: function(msgs){
-          return tools.submit.confirmForce("setup cluster", msgs);
+          return tools.submit.confirmForce($.i18n("setup")+$.i18n("cluster"), msgs);
         },
       }
     );
@@ -753,7 +753,7 @@ clusterSetup.submit.run = function(useAdvancedOptions){
         break;
 
       case api.err.NODES_AUTH_CHECK.FAILED:
-        alert("ERROR: Unable to contact server");
+        alert($.i18n("errorContactServer"));
         break;
 
       case api.err.NODES_AUTH_CHECK.WITH_ERR_NODES:
@@ -794,15 +794,14 @@ clusterSetup.submit.run = function(useAdvancedOptions){
 
       case api.err.CLUSTER_SETUP.PCS_LIB_EXCEPTION:
         clusterSetup.step.clusterNameNodes();
-        alert("Server returned an error: "+data.msg);
+        alert($.i18n("serverReturnedError")+data.msg);
         break;
 
       case api.err.CLUSTER_START.FAILED:
         alert(
-          "Cluster was created successfully!"
-          +"\n\nHowever, a start of the cluster failed. Use 'Start' in the node"
-          +" detail page to start each node individually."
-          +"\n\nDetails:\nServer returned an error: "+data.XMLHttpRequest.status
+          $.i18n("createClusterSuccess")
+          +"\n\n" + $.i18n("startClusterFailedHelper")
+          +"\n\n" + $.i18n("Details") + "\n" + $.i18n("serverReturnedError")+data.XMLHttpRequest.status
           +" "+data.XMLHttpRequest.responseText
         );
         clusterSetup.dialog.close();
@@ -814,10 +813,9 @@ clusterSetup.submit.run = function(useAdvancedOptions){
         // user is not "hacluster". So we use standard mechanism here without
         // extra notice that cluster was setup and only remember-cluster failed.
         alert(
-          "Cluster was created successfully!"
-            +"\n\nHowever, adding it to web UI failed. Use 'Add Existing' to"
-            +" add the new cluster to web UI."
-            +"\n\nDetails:\nServer returned an error: "
+          $.i18n("createClusterSuccess")
+            +"\n\n" + $.i18n("addClustertoUIFailedHelper")
+            +"\n\n" + $.i18n("Details") + "\n" + $.i18n("serverReturnedError")
             +data.XMLHttpRequest.status
             +" "+data.XMLHttpRequest.responseText
         );

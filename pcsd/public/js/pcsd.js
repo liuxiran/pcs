@@ -111,19 +111,19 @@ function create_group() {
   var order_obj = order_el.sortable();
   order_el.disableSelection();
   $("#add_group").dialog({
-    title: 'Create Group',
+    title: $.i18n("add")+$.i18n("group"),
     width: 'auto',
     modal: true,
     resizable: false,
     buttons: [
       {
-        text: "Cancel",
+        text: $.i18n("cancel"),
         click: function() {
           $(this).dialog("close");
         }
       },
       {
-        text: "Create Group",
+        text: $.i18n("add")+$.i18n("group"),
         id: "add_group_submit_btn",
         click: function() {
           var dialog_obj = $(this);
@@ -310,7 +310,7 @@ function verify_remove(
       }
     },
     {
-      text: "Cancel",
+      text: $.i18n("cancel"),
       id: "verify_remove_cancel_btn",
       click: function() {
         $(this).dialog("destroy");
@@ -338,7 +338,7 @@ function verify_remove(
 function verify_remove_clusters(cluster_id) {
   verify_remove(
     remove_cluster, false, "cluster_list", "dialog_verify_remove_clusters",
-    "cluster", "Remove Cluster(s)", "Cluster Removal", cluster_id
+    $.i18n("cluster"), $.i18n("remove")+$.i18n("cluster"), $.i18n("remove")+$.i18n("cluster"), cluster_id
   );
 }
 
@@ -351,28 +351,28 @@ function verify_remove_clusters(cluster_id) {
 function verify_remove_nodes(node_id) {
   verify_remove(
     remove_nodes, false, "node_list", "dialog_verify_remove_nodes",
-    "node", "Remove Node(s)", "Remove Node", node_id
+    $.i18n("node"), $.i18n("remove")+$.i18n("node"), $.i18n("remove")+$.i18n("node"), node_id
   );
 }
 
 function verify_remove_resources(resource_id) {
   verify_remove(
     remove_resource, true, "resource_list", "dialog_verify_remove_resources",
-    "resource", "Remove resource(s)", "Resource Removal", resource_id
+    $.i18n("resource"), $.i18n("remove")+$.i18n("resource"), $.i18n("remove")+$.i18n("resource"), resource_id
   );
 }
 
 function verify_remove_fence_devices(resource_id) {
   verify_remove(
     remove_resource, false, "stonith_list", "dialog_verify_remove_resources",
-    "fence device", "Remove device(s)", "Fence Device Removal", resource_id
+    "fence"+$.i18n("device"), $.i18n("remove")+$.i18n("device"), "Fence"+ $.i18n("device") + $.i18n("remove"), resource_id
   );
 }
 
 function verify_remove_acl_roles(role_id) {
   verify_remove(
     remove_acl_roles, false, "acls_roles_list", "dialog_verify_remove_acl_roles",
-    "ACL role", "Remove Role(s)", "Remove ACL Role", role_id
+    "ACL"+ $.i18n("role"), $.i18n("remove")+$.i18n("role"), $.i18n("remove")+'ACL'+$.i18n("role"), role_id
   );
 }
 
@@ -814,7 +814,7 @@ function auth_nodes_dialog(unauth_nodes, callback_success, callback_success_one)
 
   var buttonsOpts = [
     {
-      text: "Authenticate",
+      text: $.i18n("authenticate"),
       id: "authenticate_submit_btn",
       click: function() {
         var dialog = $(this);
@@ -826,14 +826,14 @@ function auth_nodes_dialog(unauth_nodes, callback_success, callback_success_one)
       }
     },
     {
-      text:"Cancel",
+      text:$.i18n('cancel'),
       click: function () {
         $(this).dialog("close");
       }
     }
   ];
   var dialog_obj = $("#auth_nodes").dialog({
-    title: 'Authentication of nodes',
+    title: $.i18n("authenticantionNodes"),
     modal: true,
     resizable: false,
     width: 'auto',
@@ -899,7 +899,7 @@ function auth_nodes_dialog_add_node_row(dialog_obj, node) {
 function add_existing_dialog() {
   var buttonOpts = [
     {
-      text: "Add Existing",
+      text: $.i18n("add"),
       id: "add_existing_submit_btn",
       click: function () {
         $("#add_existing_cluster").find("table.err_msg_table").find("span[id$=_error_msg]").hide();
@@ -923,7 +923,7 @@ function add_existing_dialog() {
     }
   });
 
-  $("#add_existing_cluster").dialog({title: 'Add Existing Cluster',
+  $("#add_existing_cluster").dialog({title: $.i18n("add")+$.i18n("existing")+$.i18n("cluster"),
     modal: false, resizable: false,
     width: 'auto',
     buttons: buttonOpts
@@ -1030,7 +1030,7 @@ function show_loading_screen() {
   $("#loading_screen_progress_bar").progressbar({ value: 100});
   $("#loading_screen").dialog({
     modal: true,
-    title: "Loading",
+    title: $.i18n("loading"),
     height: 100,
     width: 250,
     hide: {
@@ -1502,13 +1502,13 @@ function add_constraint_set(parent_id, c_type, force) {
 
 function new_constraint_set_row(parent_id) {
   $(parent_id + " td").first().append(
-    '<br>Set: <input type="text" name="resource_ids[]">'
+    '<br>'+$.i18n("set")+': <input type="text" name="resource_ids[]">'
   );
 }
 
 function reset_constraint_set_form(parent_id) {
   $(parent_id + " td").first().html(
-    'Set: <input type="text" name="resource_ids[]">'
+    $.i18n("set")+': <input type="text" name="resource_ids[]">'
   );
 }
 
@@ -2253,7 +2253,7 @@ function login_dialog(on_success) {
   var ok_button_selector = "#" + ok_button_id;
   var buttons = [
     {
-      text: "Log In",
+      text: $.i18n("logIn"),
       id: ok_button_id,
       click: function() {
         var me = $(this);
@@ -2287,7 +2287,7 @@ function login_dialog(on_success) {
       },
     },
     {
-      text: "Cancel",
+      text: $.i18n("cancel"),
       id: "login_form_cancel",
       // cancel will close the dialog the same way as X button does
       click: function() {
@@ -2296,7 +2296,7 @@ function login_dialog(on_success) {
     },
   ];
   var dialog_obj = $("#dialog_login").dialog({
-    title: "Log In",
+    title: $.i18n("logIn"),
     modal: true,
     resizable: true,
     width: 400,
@@ -2714,7 +2714,7 @@ function enable_sbd(dialog) {
 function enable_sbd_dialog(node_list) {
   var buttonsOpts = [
     {
-      text: "Enable SBD",
+      text: $.i18n("enable")+" SBD",
       id: "enable_sbd_btn",
       click: function() {
         var dialog = $(this);
@@ -2725,14 +2725,14 @@ function enable_sbd_dialog(node_list) {
       }
     },
     {
-      text:"Cancel",
+      text:$.i18n("cancel"),
       click: function () {
         $(this).dialog("close");
       }
     }
   ];
 
-  var dialog_obj = $("#enable_sbd_dialog").dialog({title: 'Enable SBD',
+  var dialog_obj = $("#enable_sbd_dialog").dialog({title: $.i18n("enable")+' SBD',
     modal: true, resizable: false,
     width: 'auto',
     buttons: buttonsOpts
@@ -2752,7 +2752,7 @@ function enable_sbd_dialog(node_list) {
     dialog_obj.find("#watchdog_table").append(
       '<tr>' +
         '<td>' +
-          node + ':' +
+          $.i18n("node") + ':' +
         '</td>' +
         '<td>' +
           '<input ' +
@@ -2797,7 +2797,7 @@ function disable_sbd(dialog) {
 function disable_sbd_dialog() {
   var buttonsOpts = [
     {
-      text: "Disable SBD",
+      text: $.i18n("disable")+" SBD",
       id: "disable_sbd_btn",
       click: function() {
         var dialog = $(this);
@@ -2808,7 +2808,7 @@ function disable_sbd_dialog() {
       }
     },
     {
-      text:"Cancel",
+      text:$.i18n("cancel"),
       click: function () {
         $(this).dialog("close");
       }
@@ -2816,7 +2816,7 @@ function disable_sbd_dialog() {
   ];
 
   $("#disable_sbd_dialog").dialog({
-    title: 'Disable SBD',
+    title: $.i18n("disable")+' SBD',
     modal: true, resizable: false,
     width: 'auto',
     buttons: buttonsOpts
@@ -2826,17 +2826,17 @@ function disable_sbd_dialog() {
 function sbd_status_dialog() {
   var buttonsOpts = [
     {
-      text: "Enable SBD",
+      text: $.i18n("enable")+" SBD",
       click: function() {
         enable_sbd_dialog(Pcs.nodesController.get_node_name_list());
       }
     },
     {
-      text: "Disable SBD",
+      text: $.i18n("disable")+" SBD",
       click: disable_sbd_dialog
     },
     {
-      text:"Close",
+      text:$.i18n("close"),
       click: function () {
         $(this).dialog("close");
       }
@@ -2907,7 +2907,7 @@ function show_add_resource_dialog() {
     "group_select_value", null
   );
   $('#new_resource_agent').dialog({
-    title: 'Add Resource',
+    title: $.i18n("add") + $.i18n("resource"),
     modal:true, width: 'auto'
   });
 }

@@ -140,7 +140,7 @@ tools.submit.onCallFail = function(resetMessages){
       resetMessages([
         {
           type: "error",
-          msg: "The user 'hacluster' is required for this action.",
+          msg: $.i18n("haclusterIsRequired"),
         },
       ]);
     }else if(dialogCodes.includes(XMLHttpRequest.status)){
@@ -151,7 +151,7 @@ tools.submit.onCallFail = function(resetMessages){
       );
     }else{
       alert(
-        "Server returned an error: "+XMLHttpRequest.status
+        $.i18n("serverReturnedError")+XMLHttpRequest.status
         +"\n"+XMLHttpRequest.responseText
       );
     }

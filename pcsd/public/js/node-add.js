@@ -5,7 +5,7 @@ nodeAdd.validateFormData = function(formData){
   if(formData.nodeName == ""){
     errors.push({
       type: "error",
-      msg: "You may not leave the node name field blank.",
+      msg: $.i18n("nodeNameRequired"),
     });
   }
   return errors;
@@ -20,7 +20,7 @@ nodeAdd.dialog.withSbdFeatures = function() {
 nodeAdd.dialog.create = function(){
   $('#add_node').keypress(nodeAdd.dialog.submitOnEnter);
   $('#add_node').dialog({
-    title: 'Add Node',
+    title: $.i18n("add")+$.i18n("node"),
     closeOnEscape: false,
     dialogClass: "no-close",
     modal:true,
@@ -28,12 +28,12 @@ nodeAdd.dialog.create = function(){
     width: 'auto',
     buttons: [
       {
-        text: "Add Node",
+        text: $.i18n("add")+$.i18n("node"),
         id: "add_node_submit_btn",
         click: nodeAdd.submit.run,
       },
       {
-        text: "Cancel",
+        text: $.i18n("cancel"),
         click: nodeAdd.dialog.close
       },
     ],
@@ -135,7 +135,7 @@ nodeAdd.submit.run = function(){
       { nodeAddData: formData, clusterName: clusterName },
       {
         confirm: function(msgs){
-          return tools.submit.confirmForce("add node to cluster", msgs);
+          return tools.submit.confirmForce($.i18n("addOneNodetoCluster"), msgs);
         },
       },
     );
@@ -158,7 +158,7 @@ nodeAdd.submit.run = function(){
         break;
 
       case api.err.NODES_AUTH_CHECK.FAILED:
-        alert("ERROR: Unable to contact server");
+        alert($.i18n("errorContactServer"));
         break;
 
       case api.err.NODES_AUTH_CHECK.WITH_ERR_NODES:
@@ -178,7 +178,7 @@ nodeAdd.submit.run = function(){
         break;
 
       case api.err.NODE_ADD.PCS_LIB_EXCEPTION:
-        alert("Server returned an error: "+data.msg);
+        alert($.i18n("serverReturnedError")+data.msg);
         break;
 
       case api.err.NODE_ADD.PCS_LIB_ERROR:
@@ -191,10 +191,9 @@ nodeAdd.submit.run = function(){
 
       case api.err.CLUSTER_START.FAILED:
         alert(
-          "The node was added successfully!"
-          +"\n\nHowever, a start of the node failed. Use 'Start' in the node"
-          +" detail page to start the node"
-          +"\n\nDetails:\nServer returned an error: "+data.XMLHttpRequest.status
+          $.i18n("createNodeSuccess")
+          +"\n\n" + $.i18n("startNodeFailedHelper")
+          +"\n\n" + $.i18n("Details") + "\n" + $.i18n("serverReturnedError")+data.XMLHttpRequest.status
           +" "+data.XMLHttpRequest.responseText
         );
         nodeAdd.dialog.close();

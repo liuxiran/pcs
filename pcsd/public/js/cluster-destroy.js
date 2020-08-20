@@ -4,14 +4,14 @@ clusterDestroy = {dialog: {}, submit: {}};
 clusterDestroy.dialog.create = function(){
   var clusterNameList = get_checked_ids_from_nodelist("cluster_list");
 
-  var prompt = "Please, select exactly one cluster to destroy.";
+  var prompt = $.i18n("selectOneCluster");
   if (clusterNameList.length < 1) {
     alert(prompt);
     return;
   }
 
   if (clusterNameList.length > 1) {
-    alert("It is not possible to destroy multiple clusters at once. " + prompt);
+    alert($.i18n("destroyMultipleClustersErr") + prompt);
     return;
   }
 

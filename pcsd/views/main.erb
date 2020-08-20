@@ -21,7 +21,8 @@
   <script src="/js/node-add.js"></script>
   <script src="/js/node-remove.js"></script>
   <script src="/js/pcsd.js"></script>
-  
+  <script src="/js/jquery.i18n.min.js"></script>
+  <script src="/js/jquery.i18n.messagestore.min.js"></script>
   <!--
   <script src="/js/dev/dev.js"></script>
 
@@ -70,6 +71,13 @@
 	resizeTable();
 	});
     $(window).load(function() {
+      var lang = navigator.language||navigator.userLanguage;
+      $.i18n().load({
+        'en-US': '/js/i18n/en-US.json',
+        'zh-CN': '/js/i18n/zh-CN.json'
+      }).done(function() {
+        $.i18n().locale = lang
+      });
 	resizeTable(true);
 	$('#add_ra_type').trigger('change');
 	$('#add_stonith_type').trigger('change');
